@@ -31,4 +31,22 @@ public class Inventory {
         }
     }
 
+    public Item searchBookByIsbn(String tempBookISBN){
+        for(int i = 0; i < this.books.size();i++){
+            if(this.books.get(i).getISBN().equals(tempBookISBN)){
+                return this.books.get(i);
+            }
+        }
+        return null;
+    }
+    
+    public Item searchBookByBookName(String tempBookName) {
+        for (int i = 0; i < this.books.size(); i++) {
+            if (this.books.get(i).getBookName().equals(tempBookName)) {
+                return this.books.get(i);
+            }
+        }
+        return null;
+    }
+
 }

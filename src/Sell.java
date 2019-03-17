@@ -5,8 +5,6 @@ public class Sell{
     String bookISBN, bookName;
     int quantity;
 
-
-
     public Sell(){
 
     }

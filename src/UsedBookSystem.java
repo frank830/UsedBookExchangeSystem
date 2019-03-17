@@ -8,10 +8,12 @@ import java.util.Scanner;
 public class UsedBookSystem{
     public static void main(String[] args){
 
-        // initialize Books list
-        Inventory inventory = new Inventory();
+        // initialize variables
         boolean quitFlag = false;
         boolean firstAttempt = true;
+
+        // initialize Books list
+        Inventory inventory = new Inventory();
 
         /*
          * Need to make a loop here, so the program will keep asking user if they want
@@ -26,8 +28,8 @@ public class UsedBookSystem{
             switch(modeSelected){
                 case "b":
                     firstAttempt = false;
-                    Buy newBuy = new Buy(inventory);
-                    newBuy.printBuy();
+                    Buy newBuy = new Buy();
+                    newBuy.buy(inventory);
                     break;
                 case "s":
                     firstAttempt = false;
