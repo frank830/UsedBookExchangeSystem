@@ -46,31 +46,31 @@ public class UsedBookSystem{
         //ask user if they want to sell or buy
         String userInput = "";
         do{
-        System.out.println("******************");
-        System.out.println("Thank you for choosing us! \nWould you like to buy or sell your book? \nPlease enter \"buy\" or \"b\" for buy, \"sell\" or \"s\" for sell, or \"quit\" or \"q\" to exit the program");
-        System.out.println("******************");
-        Scanner input = new Scanner(System.in);
-        userInput = input.nextLine();
-        //make all string in lowercase for switch statement in main method
-        userInput = userInput.toLowerCase();
+            System.out.println("******************");
+            System.out.println("Thank you for choosing us! \nWould you like to buy or sell your book? \nPlease enter \"buy\" or \"b\" for buy, \"sell\" or \"s\" for sell, or \"quit\" or \"q\" to exit the program");
+            System.out.println("******************");
+            Scanner input = new Scanner(System.in);
+            userInput = input.nextLine();
+            //make all string in lowercase for switch statement in main method
+            userInput = userInput.toLowerCase();
 
-        //turn the user input into 1 letter, easy to process for later.
-        switch (userInput) {
-            case "b":
-            case "buy":
-                userInput = "b";
-                break;
-            case "s":
-            case "sell":
-                userInput = "s";
-                break;
-            case "q":
-            case "quit":
-                userInput = "q";
-                break;
-            default:
-                break;
-        }
+            //turn the user input into 1 letter, easy to process for later.
+            switch (userInput) {
+                case "b":
+                case "buy":
+                    userInput = "b";
+                    break;
+                case "s":
+                case "sell":
+                    userInput = "s";
+                    break;
+                case "q":
+                case "quit":
+                    userInput = "q";
+                    break;
+                default:
+                    break;
+            }
         }while(userInput!="b" && userInput != "s" && userInput != "q");
 
         return userInput;
