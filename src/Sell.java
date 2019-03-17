@@ -2,14 +2,21 @@ import java.util.Scanner;
 
 public class Sell{
 
-    public void sell(){
-        String bookISBN = getISBN();
-        int amount = getAmount();
+    String bookISBN, bookName;
+    int quantity;
 
-        //add book 
-        addBook(bookISBN);
 
-        //for debugging
+
+    public Sell(){
+
+    }
+
+
+    public void sell(Inventory inventory){
+        this.bookISBN = getISBN();
+        this.bookName = getBookName();
+        this.quantity = getQuantity();
+        this.addBook(inventory);
         printSell();
     }
 
@@ -26,7 +33,20 @@ public class Sell{
         return tempISBN;
     }
 
-    public int getAmount(){
+    public String getBookName() {
+        String tempBookName = "";
+        Scanner input = new Scanner(System.in);
+        System.out.println("Book Name: ");
+        if (input.hasNextLine()) {
+            tempBookName = input.nextLine();
+        } else {
+            System.out.println("ERROR! No input received!!!");
+        }
+        // need to check user input format!!!!!! (special character...)
+        return tempBookName;
+    }
+
+    public int getQuantity(){
         int numOfBooks = 0;
         Scanner input = new Scanner(System.in);
         System.out.println("numOfBooks: ");
@@ -38,14 +58,13 @@ public class Sell{
         return numOfBooks;
     }
 
-    public void addBook(String isbn){
-        int inventorySize = Inventory.books.size();
-        Inventory.addBook(isbn, inventorySize - 1);
+    public void addBook(Inventory inventory){
+        //int inventorySize = inventory.getBooks().size();
+        inventory.addBook(this.bookISBN, this.bookName, this.quantity);
     }
 
     public void printSell(){
         System.out.println("Selling");
-        System.out.println(Inventory.books);
     }
 
 }

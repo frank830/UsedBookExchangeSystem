@@ -12,19 +12,19 @@ public class UsedBookSystem{
         String modeSelected = mode();
        
         //initialize Books list
-        Inventory.initInventory();
+        Inventory inventory = new Inventory();
 
         //do all the buying and selling
         switch(modeSelected){
             case "buy":
             case "b":
-                Buy newBuy = new Buy();
+                Buy newBuy = new Buy(inventory);
                 newBuy.printBuy();
                 break;
             case "sell":
             case "s":
                 Sell newSell = new Sell();
-                newSell.sell();
+                newSell.sell(inventory);
                 break;
             default:
                 System.out.println("Please select buy or sell");
@@ -32,7 +32,7 @@ public class UsedBookSystem{
         }
 
         //add, edit, or delete book in the inventory.
-        
+        inventory.printInventory();
     }
 
     public static String mode(){
