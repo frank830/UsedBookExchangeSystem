@@ -36,4 +36,10 @@ public class Item{
         return this.quantity;
     }
 
+    public void printInfo(){
+        System.out.println("ISBN: " + this.isbn);
+        System.out.println("Book Name: " + this.bookName);
+        System.out.println("Number of books in stock: " + this.quantity);
+    }
+
 }

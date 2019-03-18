@@ -28,7 +28,7 @@ public class Buy{
 
         this.findBook(inventory, searchType);
         //this.deleteBook(inventory);
-        printBuy();
+        //printBuy();
     }
 
     public int searchByIsbnOrName(){
@@ -91,13 +91,15 @@ public class Buy{
                 System.out.println("Sorry, no book is found, try search by name for more results");
             } else {
                 System.out.println("Book " + tempItem.getBookName() + " found!!! ");
+                tempItem.printInfo();
             }
         }else if(searchType == 2){
             Item tempItem = inventory.searchBookByBookName(this.bookName);
             if (tempItem == null) {
                 System.out.println("Sorry, no book is found, please try again");
             } else {
-                System.out.println("Book " + tempItem.getBookName() + " found!!! ");
+                System.out.println("Book \"" + tempItem.getBookName() + "\" found!!! ");
+                tempItem.printInfo();
             }
         }else{
             System.out.println("Error! No mode is selected for find book!");

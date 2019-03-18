@@ -9,13 +9,12 @@ public class Sell{
 
     }
 
-
     public void sell(Inventory inventory){
         this.bookISBN = getISBN();
         this.bookName = getBookName();
         this.quantity = getQuantity();
         this.addBook(inventory);
-        printSell();
+        //printSell();
     }
 
     public String getISBN(){
