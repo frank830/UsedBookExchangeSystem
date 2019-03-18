@@ -95,7 +95,7 @@ public class Buy{
         }else if(searchType == 2){
             Item tempItem = inventory.searchBookByBookName(this.bookName);
             if (tempItem == null) {
-                System.out.println("Sorry, no book is found, try search by name for more results");
+                System.out.println("Sorry, no book is found, please try again");
             } else {
                 System.out.println("Book " + tempItem.getBookName() + " found!!! ");
             }
