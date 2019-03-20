@@ -13,8 +13,11 @@ public class Sell{
         this.bookISBN = getISBN();
         this.bookName = getBookName();
         this.quantity = getQuantity();
-        this.addBook(inventory);
-        //printSell();
+
+        this.findBook(inventory, this.bookISBN);
+        Item tempItem = inventory.searchBookByIsbn(this.bookISBN);
+        this.addBook(inventory,tempItem,this.quantity);
+        printSell();
     }
 
     public String getISBN(){
@@ -54,10 +57,26 @@ public class Sell{
         }
         return numOfBooks;
     }
+    
+    public Item findBook(Inventory inventory, String isbn){
+        Item tempItem = inventory.searchBookByIsbn(this.bookISBN);
+        return tempItem;
+    }
 
-    public void addBook(Inventory inventory){
-        //int inventorySize = inventory.getBooks().size();
-        inventory.addBook(this.bookISBN, this.bookName, this.quantity);
+    public void addBook(Inventory inventory, Item bookItem, int quantity ){
+        if(bookItem==null){
+            //if no book already exists in inventroy, create a new book and simply add to book list
+            Item newBook = new Item(this.bookISBN, this.bookName, this.quantity);
+            inventory.getBooks().add(newBook);
+        }else{
+            // if there is at least one book in the inventory, add to the existing book
+            for(int i = 0; i < inventory.getBooks().size();i++){
+                if( inventory.getBooks().get(i).getISBN().equals(bookItem.getISBN()) ){
+                    inventory.getBooks().get(i).setQuantity( inventory.getBooks().get(i).getQuantity() + quantity);
+                    break;
+                }
+            }
+        }
     }
 
     public void printSell(){

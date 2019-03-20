@@ -26,9 +26,27 @@ public class Buy{
             this.bookName = getBookName();
         }
 
-        this.findBook(inventory, searchType);
-        //this.deleteBook(inventory);
-        //printBuy();
+        //check if we can find the book in the inventory
+        Item bookFound = this.findBook(inventory, searchType);
+        if(bookFound==null){
+            //if book is found, print no book found
+            if(searchType == 1){
+                System.out.println("Sorry, no book is found, try search by name for more results");
+            }
+            else if (searchType == 2){
+                System.out.println("Sorry, no book is found, try search by ISBN for more results");
+            }
+            
+        }else{
+            // if book is found, delete book or subtract the number of the same book in inventory
+            int quan = askUserForQuantity();
+            //if quan = -1, then invalid input
+            if(quan!=-1){
+                this.deleteBook(inventory, bookFound, quan);
+            }else{
+                System.out.println("Invalid buying input for the number of books buying...");
+            }
+        }
     }
 
     public int searchByIsbnOrName(){
@@ -83,36 +101,53 @@ public class Buy{
         return numOfBooks;
     }
 
-    public void findBook(Inventory inventory, int searchType){
-
+    public Item findBook(Inventory inventory, int searchType){
+        //return the Item found, if no item is found, return null
+        Item tempItem = null;
         if(searchType==1){
-            Item tempItem = inventory.searchBookByIsbn(this.bookISBN);
-            if (tempItem == null) {
-                System.out.println("Sorry, no book is found, try search by name for more results");
-            } else {
-                System.out.println("Book " + tempItem.getBookName() + " found!!! ");
-                tempItem.printInfo();
-            }
+            tempItem = inventory.searchBookByIsbn(this.bookISBN);
         }else if(searchType == 2){
-            Item tempItem = inventory.searchBookByBookName(this.bookName);
-            if (tempItem == null) {
-                System.out.println("Sorry, no book is found, please try again");
-            } else {
-                System.out.println("Book \"" + tempItem.getBookName() + "\" found!!! ");
-                tempItem.printInfo();
-            }
+            tempItem = inventory.searchBookByBookName(this.bookName);
         }else{
             System.out.println("Error! No mode is selected for find book!");
         }
+        return tempItem;
     }
 
-    public void deleteBook(Inventory inventory) {
-        // int inventorySize = inventory.getBooks().size();
-        //inventory.deleteBook(this.bookISBN, this.bookName, this.quantity);
+    public void deleteBook(Inventory inventory, Item bookItem, int quantity) {
+        if(bookItem==null){
+            System.out.println("No book found...");
+        }else if(quantity>bookItem.getQuantity()){
+            System.out.println("Sorry, we do no have enough of books in stock...");
+        }else if(quantity == bookItem.getQuantity()){
+            inventory.getBooks().remove(bookItem);
+        }
+        else{
+            for(int i = 0 ; i < inventory.getBooks().size(); i++){
+                if(inventory.getBooks().get(i).getISBN().equals(bookItem.getISBN())){
+                    //set new quantity to the book
+                    inventory.getBooks().get(i).setQuantity(inventory.getBooks().get(i).getQuantity()-quantity);
+                    break;
+                }
+            }
+        }
+
     }
 
     public void printBuy(){
         System.out.println("Buying");
+    }
+
+    public int askUserForQuantity(){
+        Scanner input = new Scanner(System.in);
+        int numOfBooks = -1;
+        System.out.println("How many would you like to buy: ");
+        if (input.hasNextLine()) {
+            numOfBooks = input.nextInt();
+        } else {
+            System.out.println("ERROR! No input received!!!");
+        }
+        return numOfBooks;
     }
 
 }

@@ -56,11 +56,11 @@ public class UsedBookSystem{
         do{
             if(firstAttempt){
                 //Welcome the user when they enter the program first time
-                System.out.println("******************");
+                System.out.println("************************************");
                 System.out.println("Welcome to the used book exchanged system!!!");
                 System.out.println(
                         "Would you like to buy or sell your book? \nPlease enter \"buy\" or \"b\" for buy, \"sell\" or \"s\" for sell, or \"quit\" or \"q\" to exit the program");
-                System.out.println("******************");
+                System.out.println("************************************");
             }else{
                 System.out.println("******************");
                 System.out.println(
