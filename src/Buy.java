@@ -1,66 +1,72 @@
 import java.util.Scanner;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Map;
 
-public class Buy{
+public class Buy {
 
     String bookISBN, bookName;
-    int quantity;
-    
-    public Buy(){
-    }
-    
-    public void buy(Inventory inventory) {
+    private Item bookBought;
 
-        //initialize variable
-        int searchType = -1;
-
-        //keep asking until user gives the correct answer
-        while(searchType!=1 && searchType!=2){
-            searchType = searchByIsbnOrName();
-        }
-
-        //Ask for isbn or book name depends on what user has chose
-        if(searchType == 1){
-            this.bookISBN = getISBN();
-        }
-        else if(searchType == 2){
-            this.bookName = getBookName();
-        }
-
-        //check if we can find the book in the inventory
-        Item bookFound = this.findBook(inventory, searchType);
-        if(bookFound==null){
-            //if book is found, print no book found
-            if(searchType == 1){
-                System.out.println("Sorry, no book is found, try search by name for more results");
-            }
-            else if (searchType == 2){
-                System.out.println("Sorry, no book is found, try search by ISBN for more results");
-            }
-            
-        }else{
-            // if book is found, delete book or subtract the number of the same book in inventory
-            int quan = askUserForQuantity();
-            //if quan = -1, then invalid input
-            if(quan!=-1){
-                this.deleteBook(inventory, bookFound, quan);
-            }else{
-                System.out.println("Invalid buying input for the number of books buying...");
-            }
-        }
+    public Buy() {
     }
 
-    public int searchByIsbnOrName(){
-        System.out.println("Would you like to search by ISBN or book name? Enter 1 for ISBN or 2 for book name: ");
+    public void buy(Inventory inventory, User user) {
+        // String username = user.getUsername();
+        // prompt user for book name
+        String buyUsername;
+        this.bookISBN = getISBN();
+        // check if we can find the book in the inventory
+        Item bookFound = this.findBook(inventory);
         Scanner input = new Scanner(System.in);
+        if (bookFound == null) {
+            // if no book is found, print no book found
+            System.out.println("Sorry, no book is found...");
+        } else {
+            // ask users which one in the list they want to buy
+            ArrayList<String> itemList = new ArrayList<String>();
+            int tempInventoryIndex = 0;
+            for (int i = 0; i < inventory.getBooks().size(); i++) {
+                if (inventory.getBooks().get(i).getISBN().equals(bookISBN)) {
+                    itemList = inventory.getBooks().get(i).printNReturnMatchingBookList();
+                    tempInventoryIndex = i;
+                    break;
+                }
+            }
+            if(itemList.contains(user.getUsername())){
+                System.out.println("Sorry, you cannot buy your own book");
+            }else{
+                boolean cont = true;
+                while (cont) {
+                    System.out.println("Enter the index of the item you would like to purchase: ");
 
-        //make sure there is an input, if no input, throw error
-        if (!input.hasNextLine()) {
-            System.out.println("ERROR! No input received!!!");
+                    int index = 0;
+                    while(!input.hasNextInt()){
+                        System.out.println("Invalid input. Please enter the index of the item you would like to purchase: ");
+                        input.nextLine();
+                    }
+                    index = input.nextInt()-1;
+                    if (index >= itemList.size() || index < 0) {
+                        System.out.println("Invalid input");
+                    } else {
+                        this.bookBought = inventory.getBooks().get(tempInventoryIndex);
+                        buyUsername = itemList.get(index);
+                        // delete from item list
+                        inventory.getBooks().get(tempInventoryIndex).deleteAnItemBasedOnUser(buyUsername);
+                        // delete from inventory
+                        deleteBookFromItemList(inventory, inventory.getBooks().get(tempInventoryIndex), buyUsername);
+                        System.out.println("Success!");
+                        cont = false;
+                    }
+                }
+            }
+
+
         }
+    }
 
-        int searchTypeSelected = input.nextInt();
-
-        return searchTypeSelected;
+    public Item getBookbought() {
+        return this.bookBought;
     }
 
     public String getISBN() {
@@ -76,78 +82,32 @@ public class Buy{
         return tempISBN;
     }
 
-    public String getBookName() {
-        String tempBookName = "";
-        Scanner input = new Scanner(System.in);
-        System.out.println("Book Name: ");
-        if (input.hasNextLine()) {
-            tempBookName = input.nextLine();
-        } else {
-            System.out.println("ERROR! No input received!!!");
-        }
-        // need to check user input format!!!!!! (special character...)
-        return tempBookName;
+    public Item findBook(Inventory inventory) {
+        // return the Item found, if no item is found, return null
+        return inventory.searchBookByIsbn(this.bookISBN);
     }
 
-    public int getQuantity() {
-        int numOfBooks = 0;
-        Scanner input = new Scanner(System.in);
-        System.out.println("numOfBooks: ");
-        if (input.hasNextLine()) {
-            numOfBooks = input.nextInt();
-        } else {
-            System.out.println("ERROR! No input received!!!");
-        }
-        return numOfBooks;
-    }
-
-    public Item findBook(Inventory inventory, int searchType){
-        //return the Item found, if no item is found, return null
-        Item tempItem = null;
-        if(searchType==1){
-            tempItem = inventory.searchBookByIsbn(this.bookISBN);
-        }else if(searchType == 2){
-            tempItem = inventory.searchBookByBookName(this.bookName);
-        }else{
-            System.out.println("Error! No mode is selected for find book!");
-        }
-        return tempItem;
-    }
-
-    public void deleteBook(Inventory inventory, Item bookItem, int quantity) {
-        if(bookItem==null){
-            System.out.println("No book found...");
-        }else if(quantity>bookItem.getQuantity()){
-            System.out.println("Sorry, we do no have enough of books in stock...");
-        }else if(quantity == bookItem.getQuantity()){
-            inventory.getBooks().remove(bookItem);
-        }
-        else{
-            for(int i = 0 ; i < inventory.getBooks().size(); i++){
-                if(inventory.getBooks().get(i).getISBN().equals(bookItem.getISBN())){
-                    //set new quantity to the book
-                    inventory.getBooks().get(i).setQuantity(inventory.getBooks().get(i).getQuantity()-quantity);
-                    break;
+    public void deleteBookFromItemList(Inventory inventory, Item bookItem, String username) {
+        String targetISBN = bookItem.getISBN();
+        for (int i = 0; i < inventory.getBooks().size(); i++) {
+            String tempISBN = inventory.getBooks().get(i).getISBN();
+            if (tempISBN.equals(targetISBN)) {
+                inventory.getBooks().get(i).deleteAnItemBasedOnUser(username);
+                int quan = inventory.getBooks().get(i).getQuantity();
+                if (quan > 1) {
+                    inventory.getBooks().get(i).setQuantity(quan - 1);
+                }
+                else if (quan == 1) {
+                    inventory.getBooks().remove(bookItem);
+                } else {
+                    System.out.println("Not enough books in stock...");
                 }
             }
         }
-
     }
 
-    public void printBuy(){
+    public void printBuy() {
         System.out.println("Buying");
-    }
-
-    public int askUserForQuantity(){
-        Scanner input = new Scanner(System.in);
-        int numOfBooks = -1;
-        System.out.println("How many would you like to buy: ");
-        if (input.hasNextLine()) {
-            numOfBooks = input.nextInt();
-        } else {
-            System.out.println("ERROR! No input received!!!");
-        }
-        return numOfBooks;
     }
 
 }

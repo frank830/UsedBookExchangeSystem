@@ -4,20 +4,26 @@ public class Sell{
 
     String bookISBN, bookName;
     int quantity;
+    double price;
+    String userName;
+    private Item bookListed;
 
     public Sell(){
 
     }
 
-    public void sell(Inventory inventory){
+    public void sell(Inventory inventory,User user){
+        this.userName = user.getUsername();
         this.bookISBN = getISBN();
-        this.bookName = getBookName();
-        this.quantity = getQuantity();
+        this.price = getPrice();
+        Item tempItem = this.findBook(inventory, this.bookISBN);
 
-        this.findBook(inventory, this.bookISBN);
-        Item tempItem = inventory.searchBookByIsbn(this.bookISBN);
-        this.addBook(inventory,tempItem,this.quantity);
-        printSell();
+        if(tempItem == null){
+            this.bookName = getBookName();
+            this.addBook(inventory, tempItem);
+        }else{
+            this.addBook(inventory, tempItem);
+        }
     }
 
     public String getISBN(){
@@ -46,16 +52,17 @@ public class Sell{
         return tempBookName;
     }
 
-    public int getQuantity(){
-        int numOfBooks = 0;
+    public double getPrice(){
+        double userPrice = 0.0;
         Scanner input = new Scanner(System.in);
-        System.out.println("numOfBooks: ");
-        if (input.hasNextLine()) {
-            numOfBooks = input.nextInt();
-        }else {
-            System.out.println("ERROR! No input received!!!");
+        System.out.println("How much you would like to sell the book: ");
+
+        while (!input.hasNextDouble()) {
+            System.out.println("Invalid Input. Please enter how much you would like to sell the book: ");
+            input.nextLine();
         }
-        return numOfBooks;
+        userPrice = input.nextDouble();
+        return userPrice;
     }
     
     public Item findBook(Inventory inventory, String isbn){
@@ -63,20 +70,63 @@ public class Sell{
         return tempItem;
     }
 
-    public void addBook(Inventory inventory, Item bookItem, int quantity ){
+    public boolean userListedBookAlready(Item bookItem, String userName) {
+        return bookItem.getUsersPricesList().containsKey(this.userName);
+    }
+
+    public void addBook(Inventory inventory, Item bookItem){
+        Scanner sc = new Scanner(System.in);
         if(bookItem==null){
             //if no book already exists in inventroy, create a new book and simply add to book list
-            Item newBook = new Item(this.bookISBN, this.bookName, this.quantity);
+            Item newBook = new Item(this.bookISBN, this.bookName, 1, this.userName, this.price);
             inventory.getBooks().add(newBook);
+            this.bookListed = newBook;
+            System.out.println("Item listed sucessfully!");
         }else{
-            // if there is at least one book in the inventory, add to the existing book
-            for(int i = 0; i < inventory.getBooks().size();i++){
-                if( inventory.getBooks().get(i).getISBN().equals(bookItem.getISBN()) ){
-                    inventory.getBooks().get(i).setQuantity( inventory.getBooks().get(i).getQuantity() + quantity);
-                    break;
+            //alread exists
+            if(bookItem.getUsersPricesList().containsKey(this.userName)){
+                System.out.println("You have already listed the item, would you like to change your selling price?");
+                String input = sc.nextLine();
+                input = input.toLowerCase();
+                boolean repeat = true;
+                if(input.equals("yes")||input.equals("y")){
+                    for (int i = 0; i < inventory.getBooks().size(); i++) {
+                        if (inventory.getBooks().get(i).getISBN().equals(bookItem.getISBN())) {
+                            // set the price of the item
+                            inventory.getBooks().get(i).modifyUsersPricesList(this.userName, this.price);
+                            inventory.getBooks().get(i).setPrice(this.price);
+                            // inventory.getBooks().get(i).setPrice(newPrices);
+                            this.bookListed = inventory.getBooks().get(i);
+                            break;
+                        }
+                    }
+                    System.out.println("Price changed ");
+                    repeat = false;
+                }else if(input.equals("no") || input.equals("n")){
+                    repeat=false;
+                }else{
+                    System.out.println("Invalid!");
                 }
+            }else{
+                //book exists, but not user
+                for(int i = 0; i < inventory.getBooks().size();i++){
+                    if(inventory.getBooks().get(i).getISBN().equals(bookItem.getISBN())){
+                        // add to inventory
+                        inventory.getBooks().get(i).addUsersPricesList(this.userName, this.price);
+                        //add to item list
+                        inventory.getBooks().get(i).setQuantity(inventory.getBooks().get(i).getQuantity()+1);
+                        inventory.getBooks().get(i).setPrice(this.price);
+                        this.bookListed = inventory.getBooks().get(i);
+                        break;
+                    }
+                }
+                System.out.println("Item listed sucessfully!");
             }
         }
+    }
+
+    public Item getBookSelling() {
+        return this.bookListed;
     }
 
     public void printSell(){
